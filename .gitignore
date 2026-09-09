@@ -1,0 +1,10 @@
+# ESP-IDF build products and local configuration
+build/
+sdkconfig
+sdkconfig.old
+
+# clangd
+.cache
+
+# vscode
+.vscode
