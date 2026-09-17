@@ -15,7 +15,7 @@ public:
     ~uart();
 
     esp_err_t init();
-    esp_err_t send(std::span<uint8_t> data);
+    esp_err_t send(std::span<const uint8_t> data);
     esp_err_t recv(std::span<uint8_t> buffer, std::size_t& bytes_read, uint32_t timeout_ms = 250);
 
 private:
