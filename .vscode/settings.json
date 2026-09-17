@@ -1,5 +1,5 @@
 {
-  "idf.currentSetup": "${env:HOME}/.espressif/v6.1/esp-idf",
+  "idf.currentSetup": "{env:HOME}/.espressif/v6.1/esp-idf",
   "idf.port": "/dev/ttyACM0",
   "idf.flashType": "UART",
   "idf.openOcdConfigs": [
