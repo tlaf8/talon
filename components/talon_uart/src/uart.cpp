@@ -1,16 +1,13 @@
 #include "talon/uart.hpp"
 #include "driver/uart.h"
-#include "esp_err.h"
 #include "freertos/projdefs.h"
 #include "hal/uart_types.h"
 #include "soc/gpio_num.h"
 
 namespace talon {
 
-constexpr char UART_TAG[] = "talon_uart";
-
 uart::uart(uart_port_t port, gpio_num_t rx, gpio_num_t tx, int ring_buf_size)
-: port_(port), tx_(rx), rx_(tx), config_{}, ring_buf_size_(ring_buf_size) {
+: port_(port), tx_(tx), rx_(rx), config_{}, ring_buf_size_(ring_buf_size) {
     config_.baud_rate = 115200;
     config_.data_bits = UART_DATA_8_BITS;
     config_.parity = UART_PARITY_DISABLE;
@@ -66,39 +63,37 @@ esp_err_t uart::init() {
     return ESP_OK;
 }
 
-esp_err_t uart::send(std::span<uint8_t> data) {
+esp_err_t uart::send(std::span<const uint8_t> data) {
     if (!initialized_) {
-        ESP_LOGE(UART_TAG, "UART port %d not installed.\n", port_);
         return ESP_ERR_INVALID_STATE;
     }
 
-    const int bytes_written = static_cast<size_t>(uart_write_bytes(
+    const int bytes_written = uart_write_bytes(
         port_, 
         data.data(), 
         data.size_bytes()
-    ));
+    );
 
-    return (bytes_written != data.size_bytes()) ? ESP_FAIL : ESP_OK;
+    return (static_cast<size_t>(bytes_written) != data.size_bytes()) ? ESP_FAIL : ESP_OK;
 }
 
 esp_err_t uart::recv(std::span<uint8_t> buffer, std::size_t& bytes_read, uint32_t timeout_ms) {
     if (!initialized_) {
-        ESP_LOGE(UART_TAG, "UART port %d not installed.\n", port_);
         return ESP_ERR_INVALID_STATE;
     }
 
-    size_t bytes_received = static_cast<size_t>(uart_read_bytes(
+    const int bytes_received = uart_read_bytes(
         port_, 
         buffer.data(), 
         buffer.size_bytes(), 
         pdMS_TO_TICKS(timeout_ms)
-    ));
+    );
 
     // set read bytes if the driver succeeded
     if (bytes_received < 0) {
         return ESP_FAIL;
     } else {
-        bytes_read = bytes_received;
+        bytes_read = static_cast<size_t>(bytes_received);
         return ESP_OK;
     }
 }

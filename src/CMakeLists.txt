@@ -1,4 +1,9 @@
 idf_component_register(
-    SRCS "main.cpp"
-    INCLUDE_DIRS "include"
+    SRCS 
+        "main.cpp"
+        "tasks/uart_task.cpp"
+    INCLUDE_DIRS
+        "tasks/include"
+    REQUIRES 
+        talon_uart
 )
